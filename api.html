@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>API请求模拟器</title>
+	<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<style type="text/css" media="screen">
+		.hide {display:none;}
+	</style>
+</head>
+<body>
+	<form accept-charset="utf-8">
+		请求方式：
+		<select name="" class="method-select">
+			<option value="GET">GET</option>
+			<option value="POST">POST</option>
+			<option value="PUT">PUT</option>
+			<option value="DELETE">DELETE</option>
+			<option value="HEAD">HEAD</option>
+			<option value="OPTIONS">OPTIONS</option>
+			<option value="PATCH">PATCH</option>
+		</select>
+		请求地址：<input type="text" id="http-url" placeholder="URL" />
+		<br>
+		<button type="button" class="btn" onclick="toggle_param()">PARAMETERS</button>
+		<div class="params hide">
+			<div class="param-input">传递参数：
+				<input type="text" placeholder="name" /> = <input type="text" placeholder="value" />
+				&nbsp;&nbsp;<button type="button" class="del-param" onclick="del_param(this)">删除</button>
+			</div>
+			<button type="button" class="btn" onclick="add_param(this)">add param</button>
+		</div>
+	</form>
+	<button class="btn send" id="http-send">Send</button>
+	<br>
+	返回结果：
+	<textarea id="return-content" rows="18" cols="128" name="">
+		
+	</textarea>
+</body>
+</html>
+
+<script>
+
+	/*-------------删除参数------------*/
+	function del_param(e){
+		$(e).parent().hide();
+	}
+
+	/*---------------打开 or 关闭 参数传递PARAMETERS-----------------*/
+	function toggle_param(){
+		$('.params').toggleClass('hide');
+	}
+
+	/*------------------添加参数选项-----------------------*/
+	function add_param(e){
+		$(e).before('<div class="param-input">传递参数：&nbsp;<input type="text" placeholder="name" /> = <input type="text" placeholder="value" />&nbsp;&nbsp;&nbsp;<button type="button" class="del-param" onclick="del_param(this)">删除</button></div>');
+	}
+		
+	$(function(){
+		$('#http-send').click(function(){
+			var params = {};
+			$method = $('.method-select').val();
+			$url = $('#http-url').val();
+			if(!$('.params').hasClass('hide')){
+				var $paramsDOM = $('.param-input');
+				$paramsDOM.each(function(){
+					params[$(this).children('input:first').val()] = $(this).children('input:last').val();
+				});
+			}
+			$.ajax({
+				type: $method,
+				url: $url,
+				data: params,
+				dataType: 'json',
+				success: function(data){
+					$('#return-content').val(JSON.stringify(data));
+				}
+			});
+		});
+	});
+</script>
+
