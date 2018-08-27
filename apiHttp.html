@@ -56,14 +56,17 @@
 </html>
 
 <script>
+
 	/*-------------删除参数------------*/
 	function del_param(e){
 		$(e).parent().hide();
 	}
+
 	/*---------------打开 or 关闭 参数传递PARAMETERS-----------------*/
 	function toggle_param(){
 		$('.params').toggleClass('hide');
 	}
+
 	/*------------------添加参数选项-----------------------*/
 	function add_param(e){
 		$(e).before('<div class="param-input">传递参数：&nbsp;<input type="text" placeholder="name" /> = <input type="text" placeholder="value" />&nbsp;&nbsp;&nbsp;<button type="button" class="del-param" onclick="del_param(this)">删除</button></div>');
@@ -94,3 +97,5 @@
 		});
 	});
 </script>
+
+
