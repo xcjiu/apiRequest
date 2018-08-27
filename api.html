@@ -8,10 +8,11 @@
 	<style type="text/css" media="screen">
 		.hide {display:none;}
 		.container {width:80%;margin:50px auto;text-align:center;}
-		.method-select {width:100px;height:20px;margin-right:30px;}
+		.method-select, .format-select {width:100px;padding:5px;margin-right:30px;}
 		.param-input {margin:10px 0px;}
 		.btn {padding:8px;background:lightblue;}
-		input {width:100px;height:20px;}
+		input {width:100px;height:15px;padding:5px;}
+		.active {color:blue;}
 	</style>
 </head>
 <body>
@@ -19,8 +20,8 @@
 	<form accept-charset="utf-8">
 		请求方式：
 		<select name="" class="method-select">
-			<option value="GET">GET</option>
 			<option value="POST">POST</option>
+			<option value="GET">GET</option>
 			<option value="PUT">PUT</option>
 			<option value="DELETE">DELETE</option>
 			<option value="HEAD">HEAD</option>
@@ -43,6 +44,13 @@
 	<textarea id="return-content" rows="18" cols="128" name="" placeholder="返回结果：">
 		
 	</textarea>
+	<br>
+	<div class="content-format">
+		<select name="" class="format-select">
+			<option value="json">Json</option>
+			<option value="html">Html</option>
+		</select>
+	</div>
 </div>
 </body>
 </html>
@@ -69,6 +77,7 @@
 		$('#http-send').click(function(){
 			var params = {};
 			$method = $('.method-select').val();
+			$format = $('.format-select').val();
 			$url = $('#http-url').val();
 			if(!$('.params').hasClass('hide')){
 				var $paramsDOM = $('.param-input');
@@ -80,7 +89,7 @@
 				type: $method,
 				url: $url,
 				data: params,
-				dataType: 'json',
+				dataType: $format,
 				success: function(data){
 					$('#return-content').val(JSON.stringify(data));
 				}
