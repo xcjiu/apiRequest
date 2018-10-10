@@ -7,7 +7,15 @@
 - [x] 请求方式支持：GET,POST,PUT,DELETE,HEAD,OPTIONS,PATCH
 - [x] 传入多个参数 或 删除
 - [x] 显示部分http响应头信息
-- [x] 显示请求结果，支持无限级数组递归显示
+- [x] 显示请求结果，支持无限级数组数据递归显示
+#
+#### 页面效果如下：
+![image](https://github.com/xcjiu/apiRequest/blob/master/api_1.png)
+#
+![image](https://github.com/xcjiu/apiRequest/blob/master/api_2.png)
+#
+![image](https://github.com/xcjiu/apiRequest/blob/master/api_3.png)
+
 
 
 
