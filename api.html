@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>API请求模拟器</title>
+	<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<style type="text/css" media="screen">
+		.hide {display:none;}
+		.container {width:80%;margin:50px auto;text-align:center;}
+		.method-select, .format-select {width:100px;padding:5px;margin-right:30px;}
+		.param-input {margin:10px 0px;}
+		.btn {padding:8px;background:lightblue;}
+		input {width:100px;height:15px;padding:5px;}
+		.active {color:blue;}
+	</style>
+</head>
+<body>
+<div class="container">
+	<form accept-charset="utf-8">
+		请求方式：
+		<select name="" class="method-select">
+			<option value="POST">POST</option>
+			<option value="GET">GET</option>
+			<option value="PUT">PUT</option>
+			<option value="DELETE">DELETE</option>
+			<option value="HEAD">HEAD</option>
+			<option value="OPTIONS">OPTIONS</option>
+			<option value="PATCH">PATCH</option>  
+		</select>
+		请求地址：<input type="text" id="http-url" placeholder="URL" style="width:300px;" />
+		<button class="btn send" type="button" id="http-send">Send</button>&nbsp;&nbsp;<span class="hide url-error" style="color:red;">请输入正确的URL地址！</span>
+		<br><br>
+		<button type="button" class="btn" onclick="toggle_param()">PARAMETERS</button>
+		<div class="params hide">
+			<div class="param-input">传递参数：
+				<input type="text" placeholder="name" /> = <input type="text" placeholder="value" />
+				&nbsp;&nbsp;<button type="button" class="del-param" onclick="del_param(this)">删除</button>
+			</div>
+			<button type="button" class="btn" onclick="add_param(this)">add param</button>
+		</div>
+	</form>
+	<br>
+	<div id="return-content" style="width:46%;float:left;text-align: left;color:blue;padding: 8px;border: 1px solid #ccc;">
+		<p id="return-info" style="color: #899bde;">API响应信息：</p>
+	</div>
+	<div id="http-content" style="width:46%;float:left;text-align: left;color:#28556b;padding: 8px;border: 1px solid #ccc;">
+		<p style="color: #7abfb9;">Http headers：</p><p id="response-info"></p>
+	</div>
+	<br>
+</div>
+</body>
+</html>
+
+<script>
+
+	/*-------------删除参数------------*/
+	function del_param(e)
+	{
+		$(e).parent().remove();
+	}
+
+	/*---------------打开 or 关闭 参数传递PARAMETERS-----------------*/
+	function toggle_param()
+	{
+		$('.params').toggleClass('hide');
+	}
+
+	/*------------------添加参数选项-----------------------*/
+	function add_param(e)
+	{
+		$(e).before('<div class="param-input">传递参数：&nbsp;<input type="text" placeholder="name" /> = <input type="text" placeholder="value" />&nbsp;&nbsp;&nbsp;<button type="button" class="del-param" onclick="del_param(this)">删除</button></div>');
+	}
+
+	/*-----------------发起ajax请求并显示返回信息----------------*/
+	function ajax_content()
+	{
+		$('#return-info').siblings().remove();
+		var params = {};
+		var $url = $('#http-url').val();
+		if(url_check($url)==false){
+			$('.url-error').removeClass('hide');
+			return false;
+		}else{
+			$('.url-error').addClass('hide');
+		}
+		$method = $('.method-select').val();
+		$format = $('.format-select').val();
+		if(!$('.params').hasClass('hide')){
+			var $paramsDOM = $('.param-input');
+			$paramsDOM.each(function(){
+				params[$(this).children('input:first').val()] = $(this).children('input:last').val();
+			});
+		}
+		$.ajax({
+			type: $method,
+			url: $url,
+			data: params,
+			//dataType: $format,
+			success: function(data){
+				$html = '';
+				if(data != null && (typeof data == 'object')){
+					Object.keys(data).forEach(function(key){
+						$html +=  '<p>' + key + '：' + data[key] + '</p>';
+					    //console.log(key,data[key]);
+					});
+				}else{
+					$html = '<p>' + JSON.stringify(data) + '</p>';
+				}
+				$('#return-info').after($html);
+			},
+			complete: function(xhr,data){
+				var httpResult = '';
+				if(data=='success' && xhr.status==200){
+					httpResult += '<p>result：' + data + '</p>';
+					httpResult += '<p>readyState：' + xhr.readyState + '</p>';
+					httpResult += '<p>status：' + xhr.status +  '&nbsp;&nbsp;&nbsp;' + xhr.statusText + '</p>';
+					httpResult += '<p>Content-Type：' + xhr.getResponseHeader("Content-Type") +  '</p>';
+				}else{
+					httpResult += '<p style="color:red;">result：' + data + '</p>';
+					httpResult += '<p>readyState：' + xhr.readyState + '</p>';
+					httpResult += '<p style="color:red;">status：' + xhr.status +  '&nbsp;&nbsp;&nbsp;' + xhr.statusText + '</p>';
+					httpResult += '<p>Content-Type：' + xhr.getResponseHeader("Content-Type") +  '</p>';
+				}
+				$('#response-info').html(httpResult);
+			}
+		});
+	}
+
+	/*----------------------url地址正则判断----------------------*/
+	function url_check(url)
+	{
+		if (url && url.match(/^((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?/)){
+			return true;
+		}
+		return false;
+	}
+	
+	$(function(){
+		//点击提交
+		$('#http-send').click(function(){
+			ajax_content();
+		});
+
+		//回车提交
+		 $("body").keydown(function() {
+             if (event.keyCode == "13") {//keyCode=13是回车键
+                 ajax_content();
+             }
+         });
+	});
+</script>
+
