@@ -98,15 +98,7 @@
 			data: params,
 			//dataType: $format,
 			success: function(data){
-				$html = '';
-				if(data != null && (typeof data == 'object')){
-					Object.keys(data).forEach(function(key){
-						$html +=  '<p>' + key + '：' + data[key] + '</p>';
-					    //console.log(key,data[key]);
-					});
-				}else{
-					$html = '<p>' + JSON.stringify(data) + '</p>';
-				}
+				var $html = jsonObjToHtml(data);
 				$('#return-info').after($html);
 			},
 			complete: function(xhr,data){
@@ -125,6 +117,38 @@
 				$('#response-info').html(httpResult);
 			}
 		});
+	}
+
+	/*------------------------JSON对象转成友好的HTML代码，递归---------------------------*/
+	function jsonObjToHtml(data, html='')
+	{
+		if(data){
+			if(typeof data == 'string' && data.match(/^\{.*\}/)){
+				data = JSON.parse(data);
+			}
+			if(typeof data == 'object'){
+				html += objEachToHtml(data);
+			}else{
+				html += '<p>' + JSON.stringify(data) + '</p>';
+			}
+		}
+		return html;
+	}
+
+	function objEachToHtml(data,html='',space=0)
+	{
+		var str = '&nbsp;&nbsp;';
+		space++;
+		Object.keys(data).forEach(function(key){
+			if(typeof data[key] == 'object'){
+				html += '<p>' + str.repeat(space) + key + '：[';
+				html += objEachToHtml(data[key], '', space);
+				html += str.repeat(space) + ']</p>';
+			}else{
+				html += '<p>' + str.repeat(space) + key + '：' + data[key] + '</p>';
+			}
+		});	
+		return html;
 	}
 
 	/*----------------------url地址正则判断----------------------*/
