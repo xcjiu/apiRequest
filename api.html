@@ -126,7 +126,7 @@
 			if(typeof data == 'string' && data.match(/^\{.*\}/)){
 				data = JSON.parse(data);
 			}
-			if(typeof data == 'object'){
+			if(typeof data == 'object' && data!==null){
 				html += objEachToHtml(data);
 			}else{
 				html += '<p>' + JSON.stringify(data) + '</p>';
@@ -139,15 +139,15 @@
 	{
 		var str = '&nbsp;&nbsp;';
 		space++;
-		Object.keys(data).forEach(function(key){
-			if(typeof data[key] == 'object'){
-				html += '<p>' + str.repeat(space) + key + '：[';
+		for(key in data){
+			if(typeof data[key] == 'object' && data[key]!==null){
+				html += '<p>' + str.repeat(space) + key + '：[ </p>';
 				html += objEachToHtml(data[key], '', space);
-				html += str.repeat(space) + ']</p>';
+				html += '<p>' + str.repeat(space) + ']</p>';
 			}else{
 				html += '<p>' + str.repeat(space) + key + '：' + data[key] + '</p>';
 			}
-		});	
+		};	
 		return html;
 	}
 
